@@ -1,0 +1,34 @@
+<script>
+/**
+ * GTM Tag: cHTML - OpenAI Ads - contents_viewed
+ * Trigger:  your GA4 view_item event
+ *
+ * Maps the GA4 view_item ecommerce object to the OpenAI Ads
+ * contents_viewed event format.
+ *
+ * Reads from existing GTM variables:
+ *   {{dlv - ecommerce.items}}   → GA4 items array
+ *   {{dlv - ecommerce.value}}   → total value
+ *   {{dlv - ecommerce.currency}}
+ */
+(function () {
+  if (!window.oaiq) return;
+
+  var items = {{dlv - ecommerce.items}} || [];
+  var contents = items.map(function (item) {
+    return {
+      id:           item.item_id  || item.id  || '',
+      name:         item.item_name || item.name || '',
+      content_type: 'product',
+      quantity:     item.quantity || 1
+    };
+  });
+
+  oaiq('measure', 'contents_viewed', {
+    type:     'contents',
+    amount:   Math.round((parseFloat({{dlv - ecommerce.value}}) || 0) * 100),
+    currency: {{dlv - ecommerce.currency}},
+    contents: contents
+  });
+})();
+</script>

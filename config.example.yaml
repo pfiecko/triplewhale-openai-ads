@@ -1,0 +1,44 @@
+# Copy to config.yaml and fill in. config.yaml is git-ignored; it holds ids, never secrets.
+
+gcp:
+  project_id:      my-gcp-project
+  region:          europe-west1
+  service_account: tw-importer@my-gcp-project.iam.gserviceaccount.com   # runtime + scheduler identity
+  secrets:                                          # Secret Manager ids
+    triplewhale_api_key:   triplewhale-api-key      # Triple Whale key with scope "Ads: Write"
+    # OpenAI Ads service-account tokens carry one scope each, so reading reports and
+    # writing conversions need two different tokens.
+    openai_ads_read_token: openai-ads-read-token    # Advertiser API, read ads
+    capi_token:            openai-ads-capi-token    # Conversions API, write conversions
+    pixel_secret:          openai-ads-pixel-secret  # X-Pixel-Secret shared with the Shopify pixel
+
+# --- spend-import: OpenAI Ads Advertiser API → Triple Whale ------------------------------
+triplewhale:
+  shop_id:            your-store.myshopify.com
+  channel:            openai-ads   # the channel name the spend appears under
+  channel_account_id: openai_ads   # part of the upsert key: do not change once live
+  currency:           USD          # currency of the OpenAI Ads account
+
+import:
+  lookback_days: 7   # re-sent on every run so restated days overwrite
+  # How many recent daily rows to request per ad. 7 is what this was verified with in
+  # production; the window cannot reach further back than this.
+  insights_days: 7
+
+schedule:
+  cron:      "30 4 * * *"
+  time_zone: UTC
+
+# Ad thumbnails. Deploy creative-host first, then put its URL here. Leave both empty to
+# send ads without thumbnails.
+creatives:
+  bucket:    my-gcp-project-openai-ad-creatives   # private bucket
+  host_base: https://openai-ad-creative-host-xxxxxxxxxx-ew.a.run.app
+
+# --- conversion-proxy: Shopify pixel → OpenAI Conversions API ----------------------------
+conversions:
+  pixel_id:      YOUR_PIXEL_ID
+  validate_only: false    # true: OpenAI validates events without recording them
+  # Optional order filter, applied in the pixel and again here. Empty lists allow everything.
+  allowed_currencies: []
+  allowed_countries:  []

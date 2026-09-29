@@ -1,0 +1,43 @@
+<script>
+/**
+ * GTM tag:  cHTML - OpenAI Ads - init
+ * Trigger:  DOM Ready - All Pages (must fire before the other OpenAI tags)
+ *
+ * Loads the OpenAI Ads pixel SDK, initialises it, and stores the landing page's
+ * oppref click id in a 30-day first-party cookie. The SDK captures oppref for
+ * browser events on its own; the cookie lets the Shopify custom pixel forward it
+ * with the server-side Conversions API event.
+ *
+ * Requires a GTM constant variable {{const - oai pixel id}}.
+ * COOKIE_DOMAIN: '' keeps the cookie on the current host. Set '.your-store.com' if the
+ * storefront and checkout live on different subdomains.
+ */
+(function () {
+  var COOKIE_NAME = 'oai_oppref';   // must match OPPREF_COOKIE in the Shopify pixel
+  var COOKIE_DOMAIN = '';
+
+  (function (w, d, s, u) {
+    if (w.oaiq) return;
+    var q = function () { q.q.push(arguments); };
+    q.q = [];
+    w.oaiq = q;
+    var js = d.createElement(s);
+    js.async = true;
+    js.src = u;
+    var f = d.getElementsByTagName(s)[0];
+    f.parentNode.insertBefore(js, f);
+  })(window, document, 'script', 'https://bzrcdn.openai.com/sdk/oaiq.min.js');
+
+  oaiq('init', { pixelId: '{{const - oai pixel id}}' });
+
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var oppref = params.get('oppref') || params.get('oai_oppref');
+    if (!oppref) return;
+    var exp = new Date(Date.now() + 30 * 24 * 3600 * 1000).toUTCString();
+    document.cookie = COOKIE_NAME + '=' + encodeURIComponent(oppref) + '; path=/'
+      + (COOKIE_DOMAIN ? '; domain=' + COOKIE_DOMAIN : '')
+      + '; expires=' + exp + '; SameSite=Lax';
+  } catch (e) {}
+})();
+</script>

@@ -1,0 +1,19 @@
+<script>
+/**
+ * GTM Tag: cHTML - OpenAI Ads - page_viewed
+ * Trigger:  DOM Ready - All Pages
+ *
+ * Fires the standard page_viewed event on every page load.
+ * The SDK handles oppref capture automatically on init.
+ */
+// oaiq is set synchronously as a queue function by the init tag (01-init).
+// No guard needed — calls queue safely even before the SDK script finishes loading.
+oaiq('measure', 'page_viewed', {
+  type: 'contents',
+  contents: [{
+    id:           window.location.pathname,
+    name:         document.title,
+    content_type: 'page'
+  }]
+});
+</script>

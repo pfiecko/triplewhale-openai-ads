@@ -1,0 +1,29 @@
+<script>
+/**
+ * GTM Tag: cHTML - OpenAI Ads - items_added
+ * Trigger:  your GA4 add_to_cart event
+ *
+ * Maps the GA4 add_to_cart ecommerce object to the OpenAI Ads
+ * items_added event format.
+ */
+(function () {
+  if (!window.oaiq) return;
+
+  var items = {{dlv - ecommerce.items}} || [];
+  var contents = items.map(function (item) {
+    return {
+      id:           item.item_id  || item.id  || '',
+      name:         item.item_name || item.name || '',
+      content_type: 'product',
+      quantity:     item.quantity || 1
+    };
+  });
+
+  oaiq('measure', 'items_added', {
+    type:     'contents',
+    amount:   Math.round((parseFloat({{dlv - ecommerce.value}}) || 0) * 100),
+    currency: {{dlv - ecommerce.currency}},
+    contents: contents
+  });
+})();
+</script>

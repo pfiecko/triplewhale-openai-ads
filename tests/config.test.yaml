@@ -1,0 +1,23 @@
+gcp:
+  project_id: test-project
+  secrets:
+    triplewhale_api_key: triplewhale-api-key
+    openai_ads_read_token: openai-ads-read-token
+    capi_token: openai-ads-capi-token
+    pixel_secret: openai-ads-pixel-secret
+triplewhale:
+  shop_id: example.myshopify.com
+  channel: openai-ads
+  channel_account_id: openai_ads
+  currency: USD
+import:
+  lookback_days: 7
+  insights_days: 7
+creatives:
+  bucket: ""
+  host_base: ""
+conversions:
+  pixel_id: PX_TEST
+  validate_only: false
+  allowed_currencies: []
+  allowed_countries: []
